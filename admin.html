@@ -3,24 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
-    <title>Admin Login</title>
+    <title>Admin Dashboard - Uplift Admin Procurement</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-    <h1>Admin Login</h1>
-    <form id="loginForm">
-        <label for="adminUsername">Username:</label>
-        <input type="text" id="adminUsername" required>
-        
-        <label for="adminPassword">Password:</label>
-        <input type="password" id="adminPassword" required>
-        
-        <button type="submit">Login</button>
-    </form>
-    <div id="tickets" style="display: none;">
-        <h2>Incoming Requests</h2>
-        <ul id="ticketList"></ul>
-    </div>
-    <script src="script.js"></script>
+<body class="bg-gray-100">
+    <header class="bg-blue-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">Admin Dashboard</h1>
+            <nav>
+                <ul class="flex space-x-4">
+                    <li><a href="index.html" class="hover:underline">Home</a></li>
+                    <li><a href="status.html" class="hover:underline">Status</a></li>
+                    <li><a href="#" class="hover:underline" onclick="logout()">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
+        <section>
+            <h2 class="text-3xl font-semibold text-gray-800">Requests Status</h2>
+            <div class="mt-4 h-64 overflow-y-auto border border-gray-300 rounded p-4">
+                <ul id="request-list">
+                    <!-- Sample request items -->
+                    <li class="py-2 border-b">Request ID: 1 - Description: Office Supplies</li>
+                    <li class="py-2 border-b">Request ID: 2 - Description: IT Equipment</li>
+                    <li class="py-2 border-b">Request ID: 3 - Description: Catering Services</li>
+                    <li class="py-2 border-b">Request ID: 4 - Description: Software License</li>
+                    <li class="py-2 border-b">Request ID: 5 - Description: Maintenance Services</li>
+                    <li class="py-2 border-b">Request ID: 6 - Description: Travel Expenses</li>
+                    <li class="py-2 border-b">Request ID: 7 - Description: Cleaning Supplies</li>
+                    <li class="py-2 border-b">Request ID: 8 - Description: Furniture</li>
+                    <li class="py-2 border-b">Request ID: 9 - Description: Marketing Materials</li>
+                    <li class="py-2 border-b">Request ID: 10 - Description: Office Renovation</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-blue-600 text-white text-center p-4 mt-10">
+        <p>&copy; 2023 Uplift Admin Procurement</p>
+    </footer>
+
+    <script>
+        function logout() {
+            // Logic to handle logout (e.g., clear session, redirect to login)
+            alert("You have logged out.");
+            window.location.href = "login.html"; // Redirect to login page
+        }
+    </script>
 </body>
 </html>

@@ -10,28 +10,20 @@
     <header class="bg-blue-600 text-white p-4">
         <div class="container mx-auto flex justify-between items-center">
             <h1 class="text-2xl font-bold">Uplift Admin Procurement</h1>
-            <nav>
-                <ul class="flex space-x-4">
-                    <li><a href="index.html" class="hover:underline">Home</a></li>
-                    <li><a href="ticket.html" class="hover:underline">Ticket</a></li>
-                    <li><a href="status.html" class="hover:underline">Status</a></li>
-                    <li><a href="login.html" class="hover:underline">Login</a></li>
-                </ul>
-            </nav>
         </div>
     </header>
 
     <main class="container mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
         <section class="text-center">
             <h2 class="text-3xl font-semibold text-gray-800">Login to Your Account</h2>
-            <form class="mt-6">
+            <form class="mt-6" onsubmit="return handleLogin(event)">
                 <div class="mb-4">
                     <label for="username" class="block text-left mb-2">Username:</label>
-                    <input type="text" id="username" class="w-full border border-gray-300 p-2 rounded" placeholder="Enter your username...">
+                    <input type="text" id="username" class="w-full border border-gray-300 p-2 rounded" placeholder="Enter your username..." required>
                 </div>
                 <div class="mb-4">
                     <label for="password" class="block text-left mb-2">Password:</label>
-                    <input type="password" id="password" class="w-full border border-gray-300 p-2 rounded" placeholder="Enter your password...">
+                    <input type="password" id="password" class="w-full border border-gray-300 p-2 rounded" placeholder="Enter your password..." required>
                 </div>
                 <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Login</button>
             </form>
@@ -41,5 +33,28 @@
     <footer class="bg-blue-600 text-white text-center p-4 mt-10">
         <p>&copy; 2023 Uplift Admin Procurement</p>
     </footer>
+
+    <script>
+        function handleLogin(event) {
+            event.preventDefault(); // Prevent the form from submitting
+
+            // Hardcoded credentials (simulating GitHub repository secrets)
+            const correctUsername = "admin";
+            const correctPassword = "UPLIFTADMIN123";
+
+            // Get user input
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            // Check credentials
+            if (username === correctUsername && password === correctPassword) {
+                // Redirect to admin page
+                window.location.href = "admin.html";
+            } else {
+                // Show error message
+                alert("Invalid username or password. Please try again.");
+            }
+        }
+    </script>
 </body>
 </html>
