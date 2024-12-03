@@ -24,6 +24,7 @@
     <main class="container mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
         <section class="text-center">
             <h2 class="text-3xl font-semibold text-gray-800">Submit a Ticket</h2>
+            <p class="mt-4">Your Ticket ID: <span id="ticketId" class="font-bold">ID0000001</span></p>
             <form class="mt-6" onsubmit="return handleSubmit(event)">
                 <div class="mb-4">
                     <label for="requestDate" class="block text-left mb-2">Date of Request (dd/mm/yy):</label>
@@ -60,11 +61,13 @@
             const requestType = document.getElementById("requestType").value;
             const dateNeeded = document.getElementById("dateNeeded").value;
 
-            // Display the submitted data (for demonstration purposes)
-            alert(`Request Submitted!\n\nDate of Request: ${requestDate}\nPurpose: ${purpose}\nType: ${requestType}\nDate Needed: ${dateNeeded}`);
+            // Display the submitted data along with the ticket ID (for demonstration purposes)
+            const ticketId = document.getElementById("ticketId").innerText;
+            alert(`Request Submitted!\n\nTicket ID: ${ticketId}\nDate of Request: ${requestDate}\nPurpose: ${purpose}\nType: ${requestType}\nDate Needed: ${dateNeeded}`);
             
             // Here you can add logic to send the data to your server
 
+            // Reset the form (optional)
             event.target.reset();
         }
     </script>
