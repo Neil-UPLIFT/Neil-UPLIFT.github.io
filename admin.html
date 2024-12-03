@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Admin Login</title>
+</head>
+<body>
+    <h1>Admin Login</h1>
+    <form id="loginForm">
+        <label for="adminUsername">Username:</label>
+        <input type="text" id="adminUsername" required>
+        
+        <label for="adminPassword">Password:</label>
+        <input type="password" id="adminPassword" required>
+        
+        <button type="submit">Login</button>
+    </form>
+    <div id="tickets" style="display: none;">
+        <h2>Incoming Requests</h2>
+        <ul id="ticketList"></ul>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
