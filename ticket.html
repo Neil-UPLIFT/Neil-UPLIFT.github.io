@@ -43,6 +43,13 @@
                 </div>
                 <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Submit</button>
             </form>
+
+            <div class="mt-10">
+                <h3 class="text-2xl font-semibold text-gray-800">Search Ticket by ID</h3>
+                <input type="text" id="searchId" class="mt-4 w-full border border-gray-300 p-2 rounded" placeholder="Enter Ticket ID (e.g., ID0000001)">
+                <button onclick="searchTicket()" class="mt-2 bg-blue-600 text-white px-4 py-2 rounded">Search</button>
+                <div id="searchResult" class="mt-4"></div>
+            </div>
         </section>
     </main>
 
@@ -84,6 +91,31 @@
 
             // Redirect to status page
             window.location.href = 'status.html';
+        }
+
+        function searchTicket() {
+            const searchId = document.getElementById("searchId").value.trim();
+            const tickets = JSON.parse(localStorage.getItem('tickets')) || [];
+            const resultDiv = document.getElementById("searchResult");
+            resultDiv.innerHTML = ''; // Clear previous results
+
+            const foundTicket = tickets.find(ticket => ticket.id === searchId);
+
+            if (foundTicket) {
+                resultDiv.innerHTML = `
+                    <div class="border border-gray-300 p-4 rounded">
+                        <h4 class="font-bold">Ticket Found:</h4>
+                        <p><strong>Ticket ID:</strong> ${foundTicket.id}</p>
+                        <p><strong>Request Date:</strong> ${foundTicket.requestDate}</p>
+                        <p><strong>Purpose:</strong> ${foundTicket.purpose}</p>
+                        <p><strong>Type of Request:</strong> ${foundTicket.requestType}</p>
+                        <p><strong>Date Needed:</strong> ${foundTicket.dateNeeded}</p>
+                        <p><strong>Status:</strong> ${foundTicket.status}</p>
+                    </div>
+                `;
+            } else {
+                resultDiv.innerHTML = `<p class="text-red-500">No ticket found with ID: ${searchId}</p>`;
+            }
         }
     </script>
 </body>
