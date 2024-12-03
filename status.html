@@ -24,31 +24,19 @@
     <main class="container mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
         <section class="text-center">
             <h2 class="text-3xl font-semibold text-gray-800">Ticket Status</h2>
-            <table class="min-w-full mt-6 border border-gray-300">
+            <table class="min-w-full mt-6 border border-gray-300" id="ticketTable">
                 <thead>
                     <tr class="bg-gray-200">
                         <th class="border border-gray-300 p-4 text-left">Ticket ID</th>
+                        <th class="border border-gray-300 p-4 text-left">Request Date</th>
+                        <th class="border border-gray-300 p-4 text-left">Purpose</th>
+                        <th class="border border-gray-300 p-4 text-left">Type of Request</th>
+                        <th class="border border-gray-300 p-4 text-left">Date Needed</th>
                         <th class="border border-gray-300 p-4 text-left">Status</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td class="border border-gray-300 p-4">ID0000001</td>
-                        <td class="border border-gray-300 p-4">Pending</td>
-                    </tr>
-                    <tr>
-                        <td class="border border-gray-300 p-4">ID0000002</td>
-                        <td class="border border-gray-300 p-4">Approved</td>
-                    </tr>
-                    <tr>
-                        <td class="border border-gray-300 p-4">ID0000003</td>
-                        <td class="border border-gray-300 p-4">Rejected</td>
-                    </tr>
-                    <tr>
-                        <td class="border border-gray-300 p-4">ID0000004</td>
-                        <td class="border border-gray-300 p-4">Completed</td>
-                    </tr>
-                    <!-- Add more rows as needed -->
+                    <!-- Ticket rows will be populated here -->
                 </tbody>
             </table>
         </section>
@@ -57,5 +45,28 @@
     <footer class="bg-blue-600 text-white text-center p-4 mt-10">
         <p>&copy; 2023 Uplift Admin Procurement</p>
     </footer>
+
+    <script>
+        // Function to load tickets from local storage and display them in the table
+        function loadTickets() {
+            const tickets = JSON.parse(localStorage.getItem('tickets')) || [];
+            const ticketTableBody = document.getElementById('ticketTable').getElementsByTagName('tbody')[0];
+
+            tickets.forEach(ticket => {
+                const row = ticketTableBody.insertRow();
+                row.innerHTML = `
+                    <td class="border border-gray-300 p-4">${ticket.id}</td>
+                    <td class="border border-gray-300 p-4">${ticket.requestDate}</td>
+                    <td class="border border-gray-300 p-4">${ticket.purpose}</td>
+                    <td class="border border-gray-300 p-4">${ticket.requestType}</td>
+                    <td class="border border-gray-300 p-4">${ticket.dateNeeded}</td>
+                    <td class="border border-gray-300 p-4">${ticket.status}</td>
+                `;
+            });
+        }
+
+        // Load tickets when the page is loaded
+        window.onload = loadTickets;
+    </script>
 </body>
 </html>

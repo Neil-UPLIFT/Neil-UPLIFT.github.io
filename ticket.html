@@ -24,7 +24,6 @@
     <main class="container mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
         <section class="text-center">
             <h2 class="text-3xl font-semibold text-gray-800">Submit a Ticket</h2>
-            <p class="mt-4">Your Ticket ID: <span id="ticketId" class="font-bold">ID0000001</span></p>
             <form class="mt-6" onsubmit="return handleSubmit(event)">
                 <div class="mb-4">
                     <label for="requestDate" class="block text-left mb-2">Date of Request (dd/mm/yy):</label>
@@ -61,14 +60,30 @@
             const requestType = document.getElementById("requestType").value;
             const dateNeeded = document.getElementById("dateNeeded").value;
 
-            // Display the submitted data along with the ticket ID (for demonstration purposes)
-            const ticketId = document.getElementById("ticketId").innerText;
-            alert(`Request Submitted!\n\nTicket ID: ${ticketId}\nDate of Request: ${requestDate}\nPurpose: ${purpose}\nType: ${requestType}\nDate Needed: ${dateNeeded}`);
-            
-            // Here you can add logic to send the data to your server
+            // Generate a new Ticket ID
+            const ticketId = `ID${String(Date.now()).slice(-7).padStart(7, '0')}`;
 
-            // Reset the form (optional)
-            event.target.reset();
+            // Create ticket object
+            const ticket = {
+                id: ticketId,
+                requestDate: requestDate,
+                purpose: purpose,
+                requestType: requestType,
+                dateNeeded: dateNeeded,
+                status: 'Pending'
+            };
+
+            // Retrieve existing tickets from local storage
+            const tickets = JSON.parse(localStorage.getItem('tickets')) || [];
+
+            // Add the new ticket to the array
+            tickets.push(ticket);
+
+            // Save the updated tickets array back to local storage
+            localStorage.setItem('tickets', JSON.stringify(tickets));
+
+            // Redirect to status page
+            window.location.href = 'status.html';
         }
     </script>
 </body>
