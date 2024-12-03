@@ -24,6 +24,16 @@
     <main class="container mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
         <section class="text-center">
             <h2 class="text-3xl font-semibold text-gray-800">Ticket Status</h2>
+
+            <!-- Search Bar -->
+            <div class="mt-6">
+                <h3 class="text-2xl font-semibold text-gray-800">Search Ticket by ID</h3>
+                <input type="text" id="searchId" class="mt-4 w-full border border-gray-300 p-2 rounded" placeholder="Enter Ticket ID (e.g., ID0000001)">
+                <button onclick="searchTicket()" class="mt-2 bg-blue-600 text-white px-4 py-2 rounded">Search</button>
+                <div id="searchResult" class="mt-4"></div>
+            </div>
+
+            <!-- Ticket Table -->
             <table class="min-w-full mt-6 border border-gray-300" id="ticketTable">
                 <thead>
                     <tr class="bg-gray-200">
@@ -63,6 +73,32 @@
                     <td class="border border-gray-300 p-4">${ticket.status}</td>
                 `;
             });
+        }
+
+        // Function to search for a ticket by ID
+        function searchTicket() {
+            const searchId = document.getElementById ("searchId").value.trim();
+            const tickets = JSON.parse(localStorage.getItem('tickets')) || [];
+            const resultDiv = document.getElementById("searchResult");
+            resultDiv.innerHTML = ''; // Clear previous results
+
+            const foundTicket = tickets.find(ticket => ticket.id === searchId);
+
+            if (foundTicket) {
+                resultDiv.innerHTML = `
+                    <div class="border border-gray-300 p-4 rounded">
+                        <h4 class="font-bold">Ticket Found:</h4>
+                        <p><strong>Ticket ID:</strong> ${foundTicket.id}</p>
+                        <p><strong>Request Date:</strong> ${foundTicket.requestDate}</p>
+                        <p><strong>Purpose:</strong> ${foundTicket.purpose}</p>
+                        <p><strong>Type of Request:</strong> ${foundTicket.requestType}</p>
+                        <p><strong>Date Needed:</strong> ${foundTicket.dateNeeded}</p>
+                        <p><strong>Status:</strong> ${foundTicket.status}</p>
+                    </div>
+                `;
+            } else {
+                resultDiv.innerHTML = `<p class="text-red-500">No ticket found with ID: ${searchId}</p>`;
+            }
         }
 
         // Load tickets when the page is loaded
