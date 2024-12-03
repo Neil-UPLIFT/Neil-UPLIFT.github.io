@@ -24,10 +24,22 @@
     <main class="container mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
         <section class="text-center">
             <h2 class="text-3xl font-semibold text-gray-800">Submit a Ticket</h2>
-            <form class="mt-6">
+            <form class="mt-6" onsubmit="return handleSubmit(event)">
                 <div class="mb-4">
-                    <label for="request" class="block text-left mb-2">Request Description:</label>
-                    <textarea id="request" rows="4" class="w-full border border-gray-300 p-2 rounded" placeholder="Describe your procurement request..."></textarea>
+                    <label for="requestDate" class="block text-left mb-2">Date of Request (dd/mm/yy):</label>
+                    <input type="text" id="requestDate" class="w-full border border-gray-300 p-2 rounded" placeholder="Enter date of request..." required>
+                </div>
+                <div class="mb-4">
+                    <label for="purpose" class="block text-left mb-2">Purpose of Request:</label>
+                    <textarea id="purpose" rows="2" class="w-full border border-gray-300 p-2 rounded" placeholder="Describe the purpose of your request..." required></textarea>
+                </div>
+                <div class="mb-4">
+                    <label for="requestType" class="block text-left mb-2">Type of Request (specify details):</label>
+                    <input type="text" id="requestType" class="w-full border border-gray-300 p-2 rounded" placeholder="Enter type of request..." required>
+                </div>
+                <div class="mb-4">
+                    <label for="dateNeeded" class="block text-left mb-2">Date Needed (dd/mm/yy):</label>
+                    <input type="text" id="dateNeeded" class="w-full border border-gray-300 p-2 rounded" placeholder="Enter date needed..." required>
                 </div>
                 <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Submit</button>
             </form>
@@ -36,7 +48,25 @@
 
     <footer class="bg-blue-600 text-white text-center p-4 mt-10">
         <p>&copy; 2023 Uplift Admin Procurement</p>
-    </ ```html
     </footer>
+
+    <script>
+        function handleSubmit(event) {
+            event.preventDefault(); // Prevent form submission
+
+            // Retrieve form data
+            const requestDate = document.getElementById("requestDate").value;
+            const purpose = document.getElementById("purpose").value;
+            const requestType = document.getElementById("requestType").value;
+            const dateNeeded = document.getElementById("dateNeeded").value;
+
+            // Display the submitted data (for demonstration purposes)
+            alert(`Request Submitted!\n\nDate of Request: ${requestDate}\nPurpose: ${purpose}\nType: ${requestType}\nDate Needed: ${dateNeeded}`);
+            
+            // Here you can add logic to send the data to your server
+
+            event.target.reset();
+        }
+    </script>
 </body>
 </html>
