@@ -4,19 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
-    <title>Ticket Submission</title>
+    <title>Procurement Ticketing System</title>
 </head>
 <body>
-    <h1>Procurement Ticketing System</h1>
-    <form id="ticketForm">
-        <label for="username">Username:</label>
-        <input type="text" id="username" required>
-        
-        <label for="request">Request:</label>
-        <textarea id="request" required></textarea>
-        
-        <button type="submit">Submit Ticket</button>
-    </form>
+    <header>
+        <h1>Procurement Ticketing System</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Submit Ticket</a></li>
+                <li><a href="admin.html">Admin Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <form id="ticketForm">
+            <label for="username">Username:</label>
+            <input type="text" id="username" required placeholder="Enter your username">
+            
+            <label for="request">Request:</label>
+            <textarea id="request" required placeholder="Describe your request"></textarea>
+            
+            <button type="submit">Submit Ticket</button>
+        </form>
+    </main>
+    
+    <footer>
+        <p>&copy; 2023 Procurement Ticketing System</p>
+    </footer>
+
     <script src="script.js"></script>
 </body>
 </html>
