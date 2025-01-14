@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quarterly Office Supplies</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
 </head>
 <body>
     <header>
@@ -21,54 +20,13 @@
         
         <section>
             <h2>Office Supplies Data</h2>
-            <div id="output"></div>
+            <iframe width="100%" height="600" frameborder="0" scrolling="no" 
+                src="https://upliftcarescom-my.sharepoint.com/personal/diana_lacuanan_upliftcares_com/_layouts/15/Doc.aspx?sourcedoc={2bf173d7-0ee0-4e37-94e5-02195a89665a}&action=embedview&wdAllowInteractivity=False&wdHideGridlines=True&wdHideHeaders=True&wdDownloadButton=True&wdInConfigurator=True">
+            </iframe>
         </section>
     </main>
     <footer>
         <p>&copy; 2023 Uplift Cares. All rights reserved.</p>
     </footer>
-
-    <script>
-        // URL of the Excel file
-        const excelUrl = "https://upliftcarescom-my.sharepoint.com/:x:/r/personal/diana_lacuanan_upliftcares_com/_layouts/15/Doc.aspx?sourcedoc=%7B7341F811-9855-493B-BA84-E724A62980F9%7D&file=QUARTERLY%20OFFICE%20SUPPLIES%20vb.xlsm&action=default&mobileredirect=true";
-
-        // Fetch the Excel file
-        fetch(excelUrl)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.arrayBuffer();
-            })
-            .then(data => {
-                const workbook = XLSX.read(data, { type: 'array' });
-                const firstSheetName = workbook.SheetNames[0];
-                const worksheet = workbook.Sheets[firstSheetName];
-                const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-                displayData(jsonData);
-            })
-            .catch(error => {
-                console.error('Error fetching the Excel file:', error);
-            });
-
-        function displayData(data) {
-            const outputDiv = document.getElementById('output');
-            outputDiv.innerHTML = ''; // Clear previous output
-
-            // Create a table to display the data
-            const table = document.createElement('table');
-            data.forEach(row => {
-                const tr = document.createElement('tr');
-                row.forEach(cell => {
-                    const td = document.createElement('td');
-                    td.textContent = cell;
-                    tr.appendChild(td);
-                });
-                table.appendChild(tr);
-            });
-
-            outputDiv.appendChild(table);
-        }
-    </script>
 </body>
 </html>
