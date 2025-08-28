@@ -93,28 +93,48 @@ function showView(view) {
 
 // Fetch data from Google Sheets
 async function fetchFromGoogleSheets() {
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(SHEET_NAME)}?key=${API_KEY}`;
+    
     try {
-        document.getElementById('tripsList').innerHTML =
-            '<div class="loading">Loading trips from Google Sheets...</div>';
-
-        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_NAME}?key=${API_KEY}`;
+        document.getElementById('loading').style.display = 'block';
+        
         const response = await fetch(url);
-        const data = await response.json();
-
-        if (data.values && data.values.length > 1) {
-            const sheetTrips = processSheetData(data.values);
-            trips = mergeTrips(trips, sheetTrips);
-            localStorage.setItem('motorpoolTrips', JSON.stringify(trips));
-            renderTripList();
-        } else {
-            document.getElementById('tripsList').innerHTML =
-                '<div class="loading">No trips found in Google Sheets</div>';
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status} - ${response.statusText}`);
         }
-    } catch (err) {
-        console.error('Error fetching Google Sheets:', err);
-        document.getElementById('tripsList').innerHTML =
-            '<div class="loading">Error loading from Google Sheets. Using local data.</div>';
+        
+        const data = await response.json();
+        
+        if (!data.values || data.values.length < 2) {
+            console.warn("No rows found in sheet");
+            renderTripList();
+            return;
+        }
+        
+        // Get headers + rows
+        const headers = data.values[0];
+        const rows = data.values.slice(1);
+
+        const sheetTrips = rows.map((row, i) => {
+            let trip = {};
+            headers.forEach((header, j) => {
+                trip[header] = row[j] || "";
+            });
+            trip.id = `sheet-${i}-${row.join('|')}`; // stable ID
+            trip.dateOfTrip = trip.dateOfTrip || trip.date || ""; // normalize
+            return trip;
+        });
+
+        mergeTrips(sheetTrips);
         renderTripList();
+        
+    } catch (error) {
+        console.error("Error fetching data from Google Sheets:", error);
+        document.getElementById('tripList').innerHTML = 
+            `<p style="color:red;">Failed to fetch data: ${error.message}</p>`;
+        renderTripList();
+    } finally {
+        document.getElementById('loading').style.display = 'none';
     }
 }
 
