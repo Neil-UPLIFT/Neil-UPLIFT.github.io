@@ -1,82 +1,30 @@
-// ==============================
-// Configuration - Environment-based
-// ==============================
-const CONFIG = {
-    development: {
-        API_KEY: 'AIzaSyCvf18utj4jj8FZz_tUtpsajkq-S1kgcxE',
-        SPREADSHEET_ID: '1fxvm4jYaVA640z4V4L3pPxRNFQjwUGdlnyIBWWzV48Q',
-        SHEET_NAME: 'Form Responses 1'
-    },
-    production: {
-        API_KEY: '', // Loaded from config.js
-        SPREADSHEET_ID: '1fxvm4jYaVA640z4V4L3pPxRNFQjwUGdlnyIBWWzV48Q',
-        SHEET_NAME: 'Form Responses 1'
-    }
-};
-
-function getEnvironment() {
-    return window.location.hostname === 'localhost' || 
-           window.location.hostname === '127.0.0.1' ? 'development' : 'production';
-}
-
-async function loadConfig() {
-    const env = getEnvironment();
-    let config = { ...CONFIG[env] };
-
-    if (env === 'production') {
-        try {
-            const response = await fetch('config.js');
-            const configText = await response.text();
-            config.API_KEY = extractValue(configText, 'API_KEY') || config.API_KEY;
-            config.SPREADSHEET_ID = extractValue(configText, 'SPREADSHEET_ID') || config.SPREADSHEET_ID;
-            config.SHEET_NAME = extractValue(configText, 'SHEET_NAME') || config.SHEET_NAME;
-        } catch (err) {
-            console.error('Error loading production config:', err);
-        }
-    }
-
-    return config;
-}
-
-function extractValue(text, variableName) {
-    const regex = new RegExp(`${variableName}\\s*=\\s*['"]([^'"]+)['"]`);
-    const match = text.match(regex);
-    return match ? match[1] : null;
-}
+// Configuration - Replace with your actual values
+const API_KEY = 'AIzaSyCvf18utj4jj8FZz_tUtpsajkq-S1kgcxE';
+const SPREADSHEET_ID = '1fxvm4jYaVA640z4V4L3pPxRNFQjwUGdlnyIBWWzV48Q';
+const SHEET_NAME = 'Form Responses 1';
 
 // Global variables
-let API_KEY = '';
-let SPREADSHEET_ID = '';
-let SHEET_NAME = '';
 let currentView = 'list';
 let selectedTripId = null;
 let trips = [];
 
 // Initialize the application
-async function init() {
-    const config = await loadConfig();
-    API_KEY = config.API_KEY;
-    SPREADSHEET_ID = config.SPREADSHEET_ID;
-    SHEET_NAME = config.SHEET_NAME;
-
-    // Load local storage first
+function init() {
+    // Load any locally stored trips first
     const localTrips = JSON.parse(localStorage.getItem('motorpoolTrips')) || [];
     trips = localTrips;
-
-    // Try to fetch Google Sheets
-    if (API_KEY) {
-        fetchFromGoogleSheets();
-    } else {
-        renderTripList();
-    }
-
-    // Set up form defaults
+    
+    // Then try to fetch from Google Sheets
+    fetchFromGoogleSheets();
+    
+    // Set up form with current date/time
     setupForm();
 }
+
 // Show/hide views
 function showView(view) {
     currentView = view;
-
+    
     if (view === 'list') {
         document.getElementById('tripListView').style.display = 'block';
         document.getElementById('ticketFormView').style.display = 'none';
@@ -93,85 +41,80 @@ function showView(view) {
 
 // Fetch data from Google Sheets
 async function fetchFromGoogleSheets() {
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(SHEET_NAME)}?key=${API_KEY}`;
-    
     try {
-        document.getElementById('loading').style.display = 'block';
+        document.getElementById('tripsList').innerHTML = '<div class="loading">Loading trips from Google Sheets...</div>';
+        
+        // This is a simplified example - you'll need to adjust based on your sheet structure
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_NAME}?key=${API_KEY}`;
         
         const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status} - ${response.statusText}`);
-        }
-        
         const data = await response.json();
         
-        if (!data.values || data.values.length < 2) {
-            console.warn("No rows found in sheet");
+        if (data.values && data.values.length > 1) {
+            // Skip header row and process data
+            const sheetTrips = processSheetData(data.values);
+            
+            // Merge with local trips, giving priority to local data
+            trips = mergeTrips(trips, sheetTrips);
+            localStorage.setItem('motorpoolTrips', JSON.stringify(trips));
+            
             renderTripList();
-            return;
+        } else {
+            document.getElementById('tripsList').innerHTML = '<div class="loading">No trips found in Google Sheets</div>';
         }
-        
-        // Get headers + rows
-        const headers = data.values[0];
-        const rows = data.values.slice(1);
-
-        const sheetTrips = rows.map((row, i) => {
-            let trip = {};
-            headers.forEach((header, j) => {
-                trip[header] = row[j] || "";
-            });
-            trip.id = `sheet-${i}-${row.join('|')}`; // stable ID
-            trip.dateOfTrip = trip.dateOfTrip || trip.date || ""; // normalize
-            return trip;
-        });
-
-        mergeTrips(sheetTrips);
-        renderTripList();
-        
     } catch (error) {
-        console.error("Error fetching data from Google Sheets:", error);
-        document.getElementById('tripList').innerHTML = 
-            `<p style="color:red;">Failed to fetch data: ${error.message}</p>`;
+        console.error('Error fetching from Google Sheets:', error);
+        document.getElementById('tripsList').innerHTML = '<div class="loading">Error loading from Google Sheets. Using local data.</div>';
         renderTripList();
-    } finally {
-        document.getElementById('loading').style.display = 'none';
     }
 }
 
 // Process Google Sheets data into trip objects
 function processSheetData(rows) {
+    // Assuming the first row is headers
     const headers = rows[0];
     const tripData = [];
-
+    
     for (let i = 1; i < rows.length; i++) {
         const row = rows[i];
         const trip = {};
-
+        
+        // Map columns based on your sheet structure
+        // You'll need to adjust these indices based on your actual sheet
         if (headers.includes('Timestamp')) trip.date = row[headers.indexOf('Timestamp')];
         if (headers.includes('Requestor')) trip.requestor = row[headers.indexOf('Requestor')];
         if (headers.includes('Purpose of Trip')) trip.purpose = row[headers.indexOf('Purpose of Trip')];
         if (headers.includes('Destination')) trip.destination1 = row[headers.indexOf('Destination')];
         if (headers.includes('Number of Passengers')) trip.numberOfPassengers = row[headers.indexOf('Number of Passengers')];
-
+        
+        // Generate a unique ID for this trip
         trip.id = `sheet-${i}-${Date.now()}`;
         trip.fromSheet = true;
+        
         tripData.push(trip);
     }
-
+    
     return tripData;
 }
 
 // Merge local trips with sheet trips
 function mergeTrips(localTrips, sheetTrips) {
+    // Simple implementation - in a real app you'd want a more robust merging strategy
     const merged = [...localTrips];
+    
     sheetTrips.forEach(sheetTrip => {
-        const exists = localTrips.some(localTrip =>
-            localTrip.requestor === sheetTrip.requestor &&
+        // Check if this trip already exists in local trips
+        const exists = localTrips.some(localTrip => 
+            localTrip.requestor === sheetTrip.requestor && 
             localTrip.purpose === sheetTrip.purpose &&
             localTrip.date === sheetTrip.date
         );
-        if (!exists) merged.push(sheetTrip);
+        
+        if (!exists) {
+            merged.push(sheetTrip);
+        }
     });
+    
     return merged;
 }
 
@@ -179,31 +122,37 @@ function mergeTrips(localTrips, sheetTrips) {
 function renderTripList() {
     const tripsList = document.getElementById('tripsList');
     tripsList.innerHTML = '';
-
+    
     if (trips.length === 0) {
         tripsList.innerHTML = '<div class="trip-item">No trips found. Create a new trip ticket.</div>';
         return;
     }
-
+    
+    // Group trips by date
     const tripsByDate = {};
     trips.forEach(trip => {
         const date = trip.dateOfTrip || trip.date || 'No date';
-        if (!tripsByDate[date]) tripsByDate[date] = [];
+        if (!tripsByDate[date]) {
+            tripsByDate[date] = [];
+        }
         tripsByDate[date].push(trip);
     });
-
+    
+    // Render trips grouped by date
     for (const date in tripsByDate) {
         const dateHeader = document.createElement('div');
         dateHeader.className = 'trip-date';
         dateHeader.textContent = `Date: ${date}`;
         tripsList.appendChild(dateHeader);
-
+        
         tripsByDate[date].forEach(trip => {
             const tripElement = document.createElement('div');
             tripElement.className = 'trip-item';
-            if (trip.id === selectedTripId) tripElement.classList.add('selected');
+            if (trip.id === selectedTripId) {
+                tripElement.classList.add('selected');
+            }
             tripElement.setAttribute('data-id', trip.id);
-
+            
             tripElement.innerHTML = `
                 <div class="trip-details">
                     <div>
@@ -217,15 +166,15 @@ function renderTripList() {
                     </div>
                 </div>
             `;
-
-            tripElement.addEventListener('click', function () {
+            
+            tripElement.addEventListener('click', function() {
                 selectedTripId = trip.id;
                 document.querySelectorAll('.trip-item').forEach(item => {
                     item.classList.remove('selected');
                 });
                 this.classList.add('selected');
             });
-
+            
             tripsList.appendChild(tripElement);
         });
     }
