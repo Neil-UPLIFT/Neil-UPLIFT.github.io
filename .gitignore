@@ -9,3 +9,5 @@ node_modules/
 
 # Ignore build directory
 /build/
+
+config.js
