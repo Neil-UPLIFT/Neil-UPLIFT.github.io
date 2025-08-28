@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motor Pool Trip Ticket System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Motor Pool Trip Ticket System</h1>
+        </div>
+
+        <div class="view-toggle no-print">
+            <button id="viewListBtn" class="active" onclick="showView('list')">View Trip List</button>
+            <button id="viewFormBtn" onclick="showView('form')">Create New Ticket</button>
+        </div>
+
+        <!-- Trip List View -->
+        <div id="tripListView" class="section">
+            <h2>Scheduled Trips</h2>
+            
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search trips by date, purpose, or requestor..." onkeyup="filterTrips()">
+            </div>
+            
+            <div class="trips-list" id="tripsList">
+                <div class="trip-item">
+                    <div class="trip-date">Loading trips from Google Sheets...</div>
+                </div>
+            </div>
+            
+            <div class="button-group no-print">
+                <button onclick="loadSelectedTrip()">Load Selected Trip</button>
+                <button onclick="deleteSelectedTrip()">Delete Selected Trip</button>
+                <button onclick="fetchFromGoogleSheets()">Refresh from Google Sheets</button>
+            </div>
+        </div>
+
+        <!-- Ticket Form View -->
+        <div id="ticketFormView" class="section" style="display: none;">
+            <h2>RESERVATION DETAILS</h2>
+            
+            <table>
+                <tr>
+                    <th>Requestor</th>
+                    <td><input type="text" id="requestor" name="requestor"></td>
+                    <th>Control Number</th>
+                    <td><input type="text" id="controlNumber" name="controlNumber"></td>
+                </tr>
+                <tr>
+                    <th>Contact Number</th>
+                    <td><input type="text" id="contactNumber" name="contactNumber"></td>
+                    <th>Pick Up Date and Time</th>
+                    <td><input type="datetime-local" id="pickupDateTime" name="pickupDateTime"></td>
+                </tr>
+                <tr>
+                    <th>Department</th>
+                    <td><input type="text" id="department" name="department"></td>
+                    <th>Pick Up Venue</th>
+                    <td><input type="text" id="pickupVenue" name="pickupVenue"></td>
+                </tr>
+                <tr>
+                    <th>Date of Trip</th>
+                    <td><input type="date" id="dateOfTrip" name="dateOfTrip"></td>
+                    <th>Return time to CCF Main</th>
+                    <td><input type="time" id="returnTime" name="returnTime"></td>
+                </tr>
+                <tr>
+                    <th>Contact number of one of the passenger</th>
+                    <td><input type="text" id="passengerContact" name="passengerContact"></td>
+                    <th>Number of Passenger</th>
+                    <td><input type="number" id="numberOfPassengers" name="numberOfPassengers"></td>
+                </tr>
+                <tr>
+                    <th>Names of the Passenger/s</th>
+                    <td colspan="3"><textarea id="passengerNames" name="passengerNames"></textarea></td>
+                </tr>
+                <tr>
+                    <th>Purpose of Trip</th>
+                    <td colspan="3"><textarea id="purpose" name="purpose"></textarea></td>
+                </tr>
+            </table>
+            
+            <table>
+                <tr>
+                    <th>Special Instructions</th>
+                    <td colspan="3"><textarea id="specialInstructions" name="specialInstructions"></textarea></td>
+                </tr>
+            </table>
+            
+            <table>
+                <tr>
+                    <th>Destination / (specific address)</th>
+                    <th>Destination 1</th>
+                    <th>Destination 2</th>
+                    <th>Destination 3</th>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><input type="text" name="destination1"></td>
+                    <td><input type="text" name="destination2"></td>
+                    <td><input type="text" name="destination3"></td>
+                </tr>
+            </table>
+            
+            <table>
+                <tr>
+                    <th>Attachments</th>
+                    <td colspan="3">
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="itinerary" name="attachments" value="itinerary">
+                                <label for="itinerary">Itinerary</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="emailAsana" name="attachments" value="emailAsana">
+                                <label for="emailAsana">Email/Asana</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="others" name="attachments" value="others">
+                                <label for="others">Others</label>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            
+            <table>
+                <tr>
+                    <th>Remarks</th>
+                    <td colspan="3"><textarea id="remarks" name="remarks"></textarea></td>
+                </tr>
+            </table>
+            
+            <p>I hereby certify that I used this vehicle for official business as stated above. I understand that the assigned driver is only available during their shift and must not work overtime.</p>
+            
+            <div class="signature-area">
+                <div class="signature-box">
+                    <p><strong>Requested by:</strong> <span id="requestorName">Neil Piamonte</span></p>
+                    <div class="signature-line"></div>
+                </div>
+                <div class="signature-box">
+                    <p><strong>Approved By:</strong> Admin Department</p>
+                    <div class="signature-line"></div>
+                </div>
+            </div>
+
+            <!-- Page break for printing -->
+            <div class="page-break"></div>
+
+            <h2>TO BE FILLED OUT BY THE DRIVER</h2>
+            
+            <table>
+                <tr>
+                    <th>Odometer Reading (Start)</th>
+                    <td><input type="number" id="odometerStart" name="odometerStart"></td>
+                    <th>Driver Name</th>
+                    <td><input type="text" id="driverName" name="driverName"></td>
+                </tr>
+                <tr>
+                    <th>Odometer Reading (End)</th>
+                    <td><input type="number" id="odometerEnd" name="odometerEnd"></td>
+                    <th>Contact Number</th>
+                    <td><input type="text" id="driverContact" name="driverContact"></td>
+                </tr>
+                <tr>
+                    <th rowspan="2">Gasoline Level</th>
+                    <th>START</th>
+                    <th>END</th>
+                    <th>Assigned Vehicle</th>
+                </tr>
+                <tr>
+                    <td>
+                        <select id="gasolineStart" name="gasolineStart">
+                            <option value=""></option>
+                            <option value="Full">Full</option>
+                            <option value="3/4">3/4</option>
+                            <option value="1/2">1/2</option>
+                            <option value="1/4">1/4</option>
+                            <option value="Empty">Empty</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select id="gasolineEnd" name="gasolineEnd">
+                            <option value=""></option>
+                            <option value="Full">Full</option>
+                            <option value="3/4">3/4</option>
+                            <option value="1/2">1/2</option>
+                            <option value="1/4">1/4</option>
+                            <option value="Empty">Empty</option>
+                        </select>
+                    </td>
+                    <td><input type="text" id="assignedVehicle" name="assignedVehicle"></td>
+                </tr>
+                <tr>
+                    <th>Easy Trip Balance</th>
+                    <td><input type="number" id="easyTripBalance" name="easyTripBalance" step="0.01"></td>
+                    <th>Plate No</th>
+                    <td><input type="text" id="plateNumber" name="plateNumber"></td>
+                </tr>
+                <tr>
+                    <th>Auto Sweep Balance</th>
+                    <td><input type="number" id="autoSweepBalance" name="autoSweepBalance" step="0.01"></td>
+                    <th>Vehicle Status</th>
+                    <td>
+                        <select id="vehicleStatus" name="vehicleStatus">
+                            <option value=""></option>
+                            <option value="Good">Good</option>
+                            <option value="Needs Maintenance">Needs Maintenance</option>
+                            <option value="In Repair">In Repair</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Remarks</th>
+                    <td colspan="3"><textarea id="driverRemarks" name="driverRemarks"></textarea></td>
+                </tr>
+            </table>
+            
+            <div class="button-group no-print">
+                <button onclick="window.print()">Print Ticket</button>
+                <button onclick="saveTrip()">Save Trip</button>
+                <button onclick="clearForm()">Clear Form</button>
+                <button onclick="fillSampleData()">Fill Sample Data</button>
+                <button onclick="saveToGoogleSheets()">Save to Google Sheets</button>
+            </div>
+
+            <div class="form-footer no-print">
+                <p>After printing, please ensure all required signatures are obtained.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
